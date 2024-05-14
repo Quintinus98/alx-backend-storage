@@ -1,2 +1,2 @@
 // my comment
-db.getCollection($1).insertOne({'name': 'Holberton school'});
+db.school.insert({'name': 'Holberton school'});
