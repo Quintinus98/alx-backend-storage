@@ -13,15 +13,16 @@ def cache_page(method: Callable) -> Callable:
     """Decortator for Caching"""
 
     @wraps(method)
-    def wrapper(url: str) -> str:  # sourcery skip: use-named-expression
+    def wrapper(url: str) -> str:
         """Wrapper for decorator"""
         redis_client.incr(f"count:{url}")
-        cached_html = redis_client.get(f"cached:{url}")
-        if cached_html:
-            return cached_html.decode("utf-8")
-        html = method(url)
-        redis_client.setex(f"cached:{url}", 10, html)
-        return html
+        cached_content = redis_client.get(f"cache:{url}")
+        if cached_content:
+            return cached_content.decode("utf-8")
+
+        content = method(url)
+        redis_client.setex(f"cache:{url}", 10, content)
+        return content
 
     return wrapper
 
