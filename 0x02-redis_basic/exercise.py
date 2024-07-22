@@ -20,24 +20,20 @@ class Cache:
         return key
 
     def get(
-        self, key: str, fn: Optional[Callable]
+        self, key: str, fn: Optional[Callable] = None
     ) -> Union[str, bytes, int, float]:
         """Convert data to fn format or None if not provided"""
         bValue = self._redis.get(name=key)
+        if bValue is None:
+            return None
         if fn is None:
             return bValue
         return fn(bValue)
 
     def get_str(self, key: str) -> str:
         """Convert data to str"""
-        bValue = self._redis.get(name=key)
-        return bValue.decode("utf-8")
+        return self.get(key, lambda data: data.decode("utf-8"))
 
     def get_int(self, key: str, fn: Callable) -> int:
         """Convert data to int"""
-        bValue = self._redis.get(name=key)
-        try:
-            value = int(bValue.decode("utf-8"))
-        except Exception:
-            value = 0
-        return value
+        return self.get(key, lambda data: int(data))
